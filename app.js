@@ -26,34 +26,23 @@ const mongoURI = process.env.MONGODB_URI
 mongoose.connect(mongoURI).then(() => console.log('DB connected')).catch((err) => console.log(err))
 
 //Error Handlers
-// catch 404
+// Create an error with 404 and message.
 app.use((req, res, next) => {
-    const err = new Error("Not Found")
-    err.statusCode = 404;
-    next(err)
+    const err = new AppError(404, "Not Found", "Bad Request");
+    next(err);
 });
 
+//Internal Server Error type.
 app.use((err, req, res, next) => {
-    console.log('ERROR', err)
-    if (err.isOperatinal) {
-        return sendResponse(
-            res,
-            err.statusCode ? err.statusCode : 500,
-            false,
-            null,
-            { message: err.message },
-            err.errorType
-        );
-    } else {
-        return sendResponse(
-            res,
-            err.statusCode ? err.statusCode : 500,
-            false,
-            null,
-            { message: err.message },
-            "Internal Server Error"
-        );
-    }
+    console.log("ERROR", err);
+    return sendResponse(
+        res,
+        err.statusCode ? err.statusCode : 500,
+        false,
+        null,
+        { message: err.message },
+        err.isOperational ? err.errorType : "Internal Server Error"
+    );
 });
 
 

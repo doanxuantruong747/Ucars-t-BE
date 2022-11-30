@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 const carBrandSchema = Schema(
     {
         name: { type: String, required: true },
-        image: { type: String, },
-        description: { type: String, },
-        status: { type: String, enum: ["Active", "Inactive"] },
+        image: { type: String, default: "" },
+        description: { type: String, default: "" },
+        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
 
         moldesId: {
             type: Schema.Types.ObjectId,
