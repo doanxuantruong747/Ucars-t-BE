@@ -3,7 +3,7 @@ const CarBrand = require("../models/CarBrand");
 
 const carBrandController = {};
 
-//Check value id 
+//Check id Car Brand
 const checkId = async (id) => {
 
     let carBrands = await CarBrand.find({ isDeleted: false })

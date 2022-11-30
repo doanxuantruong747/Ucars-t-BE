@@ -26,6 +26,35 @@ carModelController.createCarModel = catchAsync(async (req, res, next) => {
 
 // get list Car Model
 carModelController.getCarModel = catchAsync(async (req, res, next) => {
+ let { page, limit, name, ...filterQuery } = req.query
+
+ const filterKeys = Object.keys(filterQuery);
+ if (filterKeys.length)
+  throw new AppError(400, "Not accepted query", "Bad Request");
+
+ const filterConditions = [{ isDeleted: false }]
+ if (name) {
+  filterConditions.push({
+   name: { $regex: name, $options: "i" },
+  })
+ }
+ const filterCritera = filterConditions.length
+  ? { $and: filterConditions }
+  : {};
+
+ const count = await CarModel.countDocuments(filterCritera)
+
+ page = parseInt(page) || 1;
+ limit = parseInt(limit) || 10;
+ const totalPages = Math.ceil(count / limit);
+ const offset = limit * (page - 1)
+
+ let carModels = await CarModel.find(filterCritera)
+  .sort({ createdAt: -1 })
+  .limit(limit)
+  .skip(offset)
+
+ return sendResponse(res, 200, true, { carModels, totalPages, count }, null, "Get carBands successful")
 
 })
 
