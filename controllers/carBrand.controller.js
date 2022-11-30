@@ -87,6 +87,34 @@ carBrandController.getSingleCarBrand = catchAsync(async (req, res, next) => {
 // Update Single Car Brand
 carBrandController.updateSingleCarBand = catchAsync(async (req, res, next) => {
 
+    const carBrandId = req.params.id;
+    let id = "";
+
+    let carBrands = await CarBrand.find({ isDeleted: false })
+
+    carBrands.find((carBrand) => {
+        const carBrand_id = String(carBrand._id)
+
+        if (carBrand_id === carBrandId)
+            return id = carBrand_id
+
+        if (carBrand_id !== carBrandId)
+            throw new AppError(400, "Car Brand id not found", "update singel CarBrand Error")
+    }
+    );
+
+    let carBrand = await CarBrand.findById(id);
+
+    const allows = ["name", "image", "description", "status", "moldesId"];
+
+    allows.forEach((field) => {
+        if (req.body[field] !== undefined) {
+            carBrand[field] = req.body[field]
+        }
+    });
+    await carBrand.save();
+
+    return sendResponse(res, 200, true, carBrand, null, "Update Car Band successful")
 
 });
 
