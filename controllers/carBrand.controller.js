@@ -61,6 +61,26 @@ carBrandController.getCarBrands = catchAsync(async (req, res, next) => {
 // get Single Car Brand
 carBrandController.getSingleCarBrand = catchAsync(async (req, res, next) => {
 
+    const carBrandId = req.params.id;
+    let id = ""
+
+    let carBrands = await CarBrand.find({ isDeleted: false })
+
+    carBrands.find((carBrand) => {
+        const carBrand_id = String(carBrand._id)
+
+        if (carBrand_id === carBrandId)
+            return id = carBrand_id
+
+        if (carBrand_id !== carBrandId)
+            throw new AppError(400, "Car Brand id not found", "Get Single CarBrand Error")
+    }
+    );
+
+    let carBrand = await CarBrand.findById(id)
+
+    return sendResponse(res, 200, true, carBrand, null, "Get Single CarBrand successful")
+
 });
 
 
