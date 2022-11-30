@@ -3,6 +3,24 @@ const CarBrand = require("../models/CarBrand");
 
 const carBrandController = {};
 
+//Check value id 
+const checkId = async (id) => {
+
+    let carBrands = await CarBrand.find({ isDeleted: false })
+    let checkIdInput
+    carBrands.find((carBrand) => {
+        const carBrand_id = String(carBrand._id)
+
+        if (carBrand_id === id)
+            return checkIdInput = true
+
+        if (carBrand_id !== id)
+            return checkIdInput = false
+    });
+
+    return checkIdInput
+}
+
 // add new a Car Brand
 carBrandController.createNewCarBrand = catchAsync(async (req, res, next) => {
 
@@ -100,8 +118,7 @@ carBrandController.updateSingleCarBand = catchAsync(async (req, res, next) => {
 
         if (carBrand_id !== carBrandId)
             throw new AppError(400, "Car Brand id not found", "update singel CarBrand Error")
-    }
-    );
+    });
 
     let carBrand = await CarBrand.findById(id);
 
@@ -122,6 +139,21 @@ carBrandController.updateSingleCarBand = catchAsync(async (req, res, next) => {
 // Delete Single Car Brand
 carBrandController.deleteSingleCarBrand = catchAsync(async (req, res, next) => {
 
+    const carBrandId = req.params.id;
+
+    const idIput = await checkId(carBrandId)
+
+    if (idIput === false)
+        throw new AppError(400, "Car Brand id not found", "Delete singel CarBrand Error")
+
+    if (idIput === true) {
+        let carBrand = await CarBrand.findOneAndUpdate(
+            { _id: carBrandId },
+            { isDeleted: true },
+            { new: true }
+        )
+        return sendResponse(res, 200, true, carBrand, null, "Delete Car Brand successful")
+    }
 });
 
 
