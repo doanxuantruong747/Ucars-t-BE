@@ -100,7 +100,7 @@ carModelController.updateSingleCarModel = catchAsync(async (req, res, next) => {
  const idIput = await checkId(carModelId)
 
  if (idIput === false)
-  throw new AppError(400, "Car Model id not found", "Get Single Car Model Error")
+  throw new AppError(400, "Car Model id not found", "Update Single Car Model Error")
 
  if (idIput === true) {
 
@@ -121,7 +121,23 @@ carModelController.updateSingleCarModel = catchAsync(async (req, res, next) => {
 
 // Delete Single Car Model
 carModelController.deleteSingleCarModel = catchAsync(async (req, res, next) => {
+ const carModelId = req.params.id;
+ const idIput = await checkId(carModelId)
 
+ if (idIput === false)
+  throw new AppError(400, "Car Model id not found", "Delete Single Car Model Error")
+
+ if (idIput === true) {
+
+  let carModel = await CarModel.findOneAndUpdate(
+   { _id: carModelId },
+   { isDeleted: true },
+   { new: true }
+  )
+  if (!carModel) throw new AppError(400, "not found or Car Model", "Deleta Car Model Error")
+
+  return sendResponse(res, 200, true, carModel, null, "Delete Car Model successful")
+ }
 
 });
 
