@@ -11,8 +11,8 @@ const carBrandSchema = Schema(
 
         moldesId: {
             type: Schema.Types.ObjectId,
-            required: false,
             ref: "CarModel",
+            default: "",
         },
 
         isDeleted: { type: Boolean, default: false, required: true },
