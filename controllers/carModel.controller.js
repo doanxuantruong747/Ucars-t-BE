@@ -76,10 +76,10 @@ carModelController.getCarModel = catchAsync(async (req, res, next) => {
 
 })
 
+
 // get Single Car Model
 carModelController.getSingleCarModel = catchAsync(async (req, res, next) => {
  const CarModelId = req.params.id;
-
 
  const idIput = await checkId(CarModelId)
 
@@ -96,7 +96,26 @@ carModelController.getSingleCarModel = catchAsync(async (req, res, next) => {
 
 // Update Single Car Model
 carModelController.updateSingleCarModel = catchAsync(async (req, res, next) => {
+ const carModelId = req.params.id;
+ const idIput = await checkId(carModelId)
 
+ if (idIput === false)
+  throw new AppError(400, "Car Model id not found", "Get Single Car Model Error")
+
+ if (idIput === true) {
+
+  let carModel = await CarModel.findById(carModelId);
+  const allows = ["name"];
+
+  allows.forEach((field) => {
+   if (req.body[field] !== undefined) {
+    carModel[field] = req.body[field]
+   }
+  });
+  await carModel.save();
+
+  return sendResponse(res, 200, true, carModel, null, "Update Car Model successful")
+ }
 });
 
 
