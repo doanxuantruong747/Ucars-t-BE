@@ -4,6 +4,24 @@ const CarModel = require("../models/CarModel");
 
 const carModelController = {};
 
+//Check id Car Models
+const checkId = async (id) => {
+
+ let carModels = await CarModel.find({ isDeleted: false })
+ let checkIdInput
+ carModels.find((carModel) => {
+  const carModel_id = String(carModel._id)
+
+  if (carModel_id === id)
+   return checkIdInput = true
+
+  if (carBrand_id !== id)
+   return checkIdInput = false
+ });
+
+ return checkIdInput
+}
+
 // Create Car Model
 carModelController.createCarModel = catchAsync(async (req, res, next) => {
  let { name } = req.body
@@ -60,6 +78,18 @@ carModelController.getCarModel = catchAsync(async (req, res, next) => {
 
 // get Single Car Model
 carModelController.getSingleCarModel = catchAsync(async (req, res, next) => {
+ const CarModelId = req.params.id;
+
+
+ const idIput = await checkId(CarModelId)
+
+ if (idIput === false)
+  throw new AppError(400, "Car Model id not found", "Get Single Car Model Error")
+
+ if (idIput === true) {
+  let carModel = await CarModel.findById(CarModelId)
+  return sendResponse(res, 200, true, carModel, null, "Get Single Car Model successful")
+ }
 
 });
 
