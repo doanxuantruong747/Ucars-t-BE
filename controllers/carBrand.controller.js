@@ -80,25 +80,15 @@ carBrandController.getCarBrands = catchAsync(async (req, res, next) => {
 carBrandController.getSingleCarBrand = catchAsync(async (req, res, next) => {
 
     const carBrandId = req.params.id;
-    let id = ""
 
-    let carBrands = await CarBrand.find({ isDeleted: false })
+    const idIput = await checkId(carBrandId)
+    if (idIput === false)
+        throw new AppError(400, "Car Brand id not found", "Update singel CarBrand Error")
 
-    carBrands.find((carBrand) => {
-        const carBrand_id = String(carBrand._id)
-
-        if (carBrand_id === carBrandId)
-            return id = carBrand_id
-
-        if (carBrand_id !== carBrandId)
-            throw new AppError(400, "Car Brand id not found", "Get Single CarBrand Error")
+    if (idIput === true) {
+        let carBrand = await CarBrand.findById(carBrandId)
+        return sendResponse(res, 200, true, carBrand, null, "Get Single CarBrand successful")
     }
-    );
-
-    let carBrand = await CarBrand.findById(id)
-
-    return sendResponse(res, 200, true, carBrand, null, "Get Single CarBrand successful")
-
 });
 
 
@@ -106,33 +96,27 @@ carBrandController.getSingleCarBrand = catchAsync(async (req, res, next) => {
 carBrandController.updateSingleCarBand = catchAsync(async (req, res, next) => {
 
     const carBrandId = req.params.id;
-    let id = "";
 
-    let carBrands = await CarBrand.find({ isDeleted: false })
+    const idIput = await checkId(carBrandId)
 
-    carBrands.find((carBrand) => {
-        const carBrand_id = String(carBrand._id)
+    if (idIput === false)
+        throw new AppError(400, "Car Brand id not found", "Update singel CarBrand Error")
 
-        if (carBrand_id === carBrandId)
-            return id = carBrand_id
+    if (idIput === true) {
 
-        if (carBrand_id !== carBrandId)
-            throw new AppError(400, "Car Brand id not found", "update singel CarBrand Error")
-    });
+        let carBrand = await CarBrand.findById(carBrandId);
 
-    let carBrand = await CarBrand.findById(id);
+        const allows = ["name", "image", "description", "status", "moldesId"];
 
-    const allows = ["name", "image", "description", "status", "moldesId"];
+        allows.forEach((field) => {
+            if (req.body[field] !== undefined) {
+                carBrand[field] = req.body[field]
+            }
+        });
+        await carBrand.save();
 
-    allows.forEach((field) => {
-        if (req.body[field] !== undefined) {
-            carBrand[field] = req.body[field]
-        }
-    });
-    await carBrand.save();
-
-    return sendResponse(res, 200, true, carBrand, null, "Update Car Band successful")
-
+        return sendResponse(res, 200, true, carBrand, null, "Update Car Band successful")
+    }
 });
 
 
