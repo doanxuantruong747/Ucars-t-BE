@@ -32,13 +32,12 @@ carBrandController.createNewCarBrand = catchAsync(async (req, res, next) => {
     }
 
     if (carBrand) {
-        return sendResponse(res, 200, true, { carBrand: false }, null, "carBrand already exists")
-
+        return sendResponse(res, 200, true, { carBrand, addCarBrand: false }, null, "carBrand already exists")
     }
 
     carBrand = await CarBrand.create(({ name, image, status, description }))
 
-    sendResponse(res, 200, true, carBrand, null, "Create new carBrand successful")
+    return sendResponse(res, 200, true, { carBrand, addCarBrand: false }, null, "Create new carBrand successful")
 
 })
 
